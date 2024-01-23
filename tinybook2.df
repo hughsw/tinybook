@@ -1,0 +1,26 @@
+FROM python:3.11-rc-bullseye
+#FROM debian:11.5
+
+RUN  true \
+  && apt-get update \
+  && apt-get install -y \
+      apt-utils \
+  && apt-get install -y \
+      emacs-nox \
+  && python3 -m pip install --upgrade pip \
+  && true
+
+
+RUN  true \
+  && pip install \
+    fastapi \
+    python-multipart \
+    PyPDF2 \
+    "uvicorn[standard]" \
+  && true
+
+WORKDIR /app
+
+COPY src/app/ /app
+
+CMD ["uvicorn", "--host", "0.0.0.0", "main:app", "--reload"]

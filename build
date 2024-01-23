@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -euo pipefail
+trap 'rc=$?;set +ex;if [[ $rc -ne 0 ]];then trap - ERR EXIT;echo 1>&2;echo "*** fail *** : code $rc : $DIR/$SCRIPT $ARGS" 1>&2;echo 1>&2;exit $rc;fi' ERR EXIT
+ARGS="$*"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT="$(basename "${BASH_SOURCE[0]}")"
+
+# see: https://github.com/docker/buildx/issues/59
+
+name=tinybook2
+
+docker build -f ${name}.df -t docker.io/hughsw/${name} . 2>&1 | tee build-${name}.log
+
+exit
+
+docker buildx build --platform linux/amd64,linux/arm64 -f ${name}.df -t hughsw/${name} . 2>&1 | tee build.log
+echo | tee -a build.log
+#docker buildx build --load -f ${name}.df -t hughsw/${name} . 2>&1 | tee -a build.log
+docker buildx build --push -f ${name}.df -t hughsw/${name} . 2>&1 | tee -a build.log
