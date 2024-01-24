@@ -1,0 +1,27 @@
+
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Fables-preview.pdf" 'http://localhost:8000/tinybook' > fabdevpreview.pdf
+
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book. - dev-preview.pdf" 'http://localhost:8000/tinybook' > tbdevpreview.pdf
+
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter","up":1}' --form pdfFile="@/Users/hugh/work/Emma/Fables-preview.pdf" 'http://localhost:8000/simple' > fabsimple.pdf
+
+
+
+ curl -sSL -X POST --form paramsJson='{"numFolds":3,"layout":"A4"}' --form pdfFile="@Emma's Tiny Book.pdf" 'http://localhost:8000/tinybook' > foon10.pdf
+
+
+ curl -sSL -X POST --form paramsJson='{"numFolds":3,"layout":"A4"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book.pdf" 'http://localhost:8000/tinybook' > foon.pdf
+
+ curl -sSL -X POST --form configJson='{"numFolds":3,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book. - dev-preview.pdf" 'http://localhost:8000/tinybook' > tbdevpreview.pdf
+
+ curl -sSL -X POST --form configJson='{"numFolds":3,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book. - dev-preview.pdf" 'http://localhost:8000/tinybook' > tbdevpreview.pdf
+
+
+ curl -sSL -X POST --form paramsJson='{"layout":"A4"}' --form pdfFile="@../../../Emma's Tiny Book.pdf" 'http://localhost:8000/tinybook'
+
+ curl -sSL -X POST --form configJson='{"numFolds":4,"layout":"Letter", "up":1}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book. - dev-preview.pdf" 'http://localhost:8000/simple' > tbdev1upsimple.pdf
+
+
+ curl -sSL 'http://localhost:8000/'
+
+ curl -sSL 'http://localhost:8000/items/23?q=bar'
