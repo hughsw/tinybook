@@ -2,8 +2,8 @@ import math
 from io import BytesIO
 from math import sqrt, pow
 
-from PyPDF2 import PdfWriter, PdfReader, Transformation
-from PyPDF2.generic import RectangleObject
+from pypdf import PdfWriter, PdfReader, Transformation
+from pypdf.generic import RectangleObject
 
 from utils import attrdict
 from pagemap import pageMap
