@@ -27,9 +27,9 @@ async def fold(config):
     pageMap(ret)
     render(ret)
 
-    if False:
+    if True:
         page1 = work.reader.pages[0]
-        page1.scale_by(0.5)
+        page1.scale_by(0.75)
         work.writer.add_page(page1)
 
     result.outer = BytesIO()
@@ -114,100 +114,119 @@ def render(ret):
     cellHeight = int(height / (1 << numFoldsVert))
     print(f'render: cellScale: {cellScale}, cellWidth: {cellWidth}, cellHeight: {cellHeight}')
 
-    writer = work.writer
+    #writer = work.writer
 
     #pagex = writer.add_blank_page(width, height)
     #print(f'pagex.mediabox: {pagex.mediabox}, pagex]cropbox: {pagex.cropbox}')
 
     for outIndex, outPage in enumerate(outPages):
-        outPdfPage = writer.add_blank_page(width, height)
-        print(f'outIndex: {outIndex}, outPdfPage.user_unit: {outPdfPage.user_unit}, len(outPage): {len(outPage)}, outPage: {outPage}')
+        outPdfPage = work.writer.add_blank_page(width, height)
+        #print(f'type(outPdfPage): {type(outPdfPage)}')
+        #print(f'dir(outPdfPage): {dir(outPdfPage)}')
+        print(f'outIndex: {outIndex}, outPdfPage.user_unit: {outPdfPage.user_unit}, outPdfPage.mediabox: {outPdfPage.mediabox}, len(outPage): {len(outPage)}, outPage: {outPage}')
+
         for inPageIndex, link in outPage.items():
             inPage = inPages[inPageIndex]
             print(' ', f'inPageIndex: {inPageIndex}, link: {link}, inPage.user_unit: {inPage.user_unit},  inPage.mediabox: {inPage.mediabox}')
-            x, y, d = link
 
-            # TODO: abstract this and move to fold or pagemap
-            if numFoldsHoriz != numFoldsVert:
-                ipx, ipy = map(float, inPage.mediabox.upper_right)
-                if outIndex % 2 == 0:
-                    inPage.add_transformation(Transformation().rotate(90).translate(tx=ipy, ty=0))
-                else:
-                    inPage.add_transformation(Transformation().rotate(-90).translate(tx=0, ty=ipx))
-                print(' ', f'inPage.mediabox 2: {inPage.mediabox}')
-                # Note:
-                #inPage.mediabox.upper_right = ipy, ipx
-                #print(' ', f'inPage.mediabox 3: {inPage.mediabox}')
+            if True:
+                outPdfPage.merge_page(inPage)
+                break
 
-            assert inPage.mediabox.lower_left == (0.0, 0.0), str((inPage.mediabox))
-            px, py = map(float, inPage.mediabox.upper_right)
+                if True:
+                    page1 = work.reader.pages[0]
+                    page1.scale_by(0.25)
+                    #outPdfPage.merge_page(page1)
+                    #inPage.scale_by(0.25)
+                    work.writer.add_page(inPage)
+                    #work.writer.add_page(page1)
 
-            widthScale = cellWidth / px
-            heightScale = cellHeight / py
-            scale = min(widthScale, heightScale)
-            print(' ', f'scale: {scale}, widthScale: {widthScale}, heightScale: {heightScale}')
+            else:
+                x, y, d = link
 
-            tx = cellWidth * ((1<<numFoldsHoriz)-1-x)
-            ty = cellHeight * ((1<<numFoldsVert)-1-y)
-            print(' ', f'tx: {tx}, ty: {ty}')
-            op = Transformation().scale(sx=scale, sy=scale)
-            if d == -1:
-                op = op.rotate(180).translate(tx=cellWidth, ty=cellHeight)
-            op = op.translate(tx=tx, ty=ty)
+                # TODO: abstract this and move to fold or pagemap
+                if numFoldsHoriz != numFoldsVert:
+                    ipx, ipy = map(float, inPage.mediabox.upper_right)
+                    if outIndex % 2 == 0:
+                        inPage.add_transformation(Transformation().rotate(90).translate(tx=ipy, ty=0))
+                    else:
+                        inPage.add_transformation(Transformation().rotate(-90).translate(tx=0, ty=ipx))
+                    print(' ', f'inPage.mediabox 2: {inPage.mediabox}')
+                    # Note:
+                    #inPage.mediabox.upper_right = ipy, ipx
+                    #print(' ', f'inPage.mediabox 3: {inPage.mediabox}')
 
-            inPage.add_transformation(op)
-            outPdfPage.merge_page(inPage)
+                assert inPage.mediabox.lower_left == (0.0, 0.0), str((inPage.mediabox))
+                px, py = map(float, inPage.mediabox.upper_right)
 
-        if outIndex == 1 and numFolds >= 1:
-            fold1 = ret.work.foldCutReader.pages[1-1]
-            print(f'fold1: mediabox: {fold1.mediabox}, cropbox: {fold1.cropbox}, artbox: {fold1.artbox}')
-            foldHeight = 10
-            xLo = 0
-            xHi = width
-            yOffset = height/2+0
-            foldBox = RectangleObject((xLo, yOffset-foldHeight/2, xHi, yOffset+foldHeight/2))
-            fold1.mediabox = foldBox
-            fold1.cropbox = foldBox
-            outPdfPage.merge_page(fold1)
+                widthScale = cellWidth / px
+                heightScale = cellHeight / py
+                scale = min(widthScale, heightScale)
+                print(' ', f'scale: {scale}, widthScale: {widthScale}, heightScale: {heightScale}')
 
-        if outIndex == 0:
-            if numFolds >= 2:
-                fold2 = ret.work.foldCutReader.pages[2-1]
-                print(f'fold2: mediabox: {fold2.mediabox}, cropbox: {fold2.cropbox}, artbox: {fold2.artbox}')
-                foldWidth = 8
-                xOffset = width*1/2+1
-                yLo = 0
-                yHi = height*1/2
-                foldBox = RectangleObject((xOffset-foldWidth/2, yLo, xOffset+foldWidth/2, yHi))
-                fold2.mediabox = foldBox
-                fold2.cropbox = foldBox
-                outPdfPage.merge_page(fold2)
+                tx = cellWidth * ((1<<numFoldsHoriz)-1-x)
+                ty = cellHeight * ((1<<numFoldsVert)-1-y)
+                print(' ', f'tx: {tx}, ty: {ty}')
+                op = Transformation().scale(sx=scale, sy=scale)
+                if d == -1:
+                    op = op.rotate(180).translate(tx=cellWidth, ty=cellHeight)
+                op = op.translate(tx=tx, ty=ty)
 
-            if numFolds >= 3:
-                fold3 = ret.work.foldCutReader.pages[3-1]
-                print(f'fold3: mediabox: {fold3.mediabox}, cropbox: {fold3.cropbox}, artbox: {fold3.artbox}')
-                foldHeight = 8
+                inPage.add_transformation(op)
+                outPdfPage.merge_page(inPage)
+
+        if False:
+            if outIndex == 1 and numFolds >= 1:
+                fold1 = ret.work.foldCutReader.pages[1-1]
+                print(f'fold1: mediabox: {fold1.mediabox}, cropbox: {fold1.cropbox}, artbox: {fold1.artbox}')
+                foldHeight = 10
                 xLo = 0
-                xHi = width*1/2
-                yOffset = height*3/4+0
+                xHi = width
+                yOffset = height/2+0
                 foldBox = RectangleObject((xLo, yOffset-foldHeight/2, xHi, yOffset+foldHeight/2))
-                fold3.mediabox = foldBox
-                fold3.cropbox = foldBox
-                outPdfPage.merge_page(fold3)
+                fold1.mediabox = foldBox
+                fold1.cropbox = foldBox
+                outPdfPage.merge_page(fold1)
 
-            if numFolds >= 4:
-                fold4 = ret.work.foldCutReader.pages[4-1]
-                print(f'fold4: mediabox: {fold4.mediabox}, cropbox: {fold4.cropbox}, artbox: {fold4.artbox}')
-                foldHeight = 8
-                yLo = height*1/2
-                yHi = height*3/4
-                xOffset = width*3/4+0
-                foldBox = RectangleObject((xOffset-foldHeight/2, yLo, xOffset+foldHeight/2, yHi))
-                fold4.mediabox = foldBox
-                fold4.cropbox = foldBox
-                outPdfPage.merge_page(fold4)
+            if outIndex == 0:
+                if numFolds >= 2:
+                    fold2 = ret.work.foldCutReader.pages[2-1]
+                    print(f'fold2: mediabox: {fold2.mediabox}, cropbox: {fold2.cropbox}, artbox: {fold2.artbox}')
+                    foldWidth = 8
+                    xOffset = width*1/2+1
+                    yLo = 0
+                    yHi = height*1/2
+                    foldBox = RectangleObject((xOffset-foldWidth/2, yLo, xOffset+foldWidth/2, yHi))
+                    fold2.mediabox = foldBox
+                    fold2.cropbox = foldBox
+                    outPdfPage.merge_page(fold2)
 
-        outPdfPage.compress_content_streams()
+                if numFolds >= 3:
+                    fold3 = ret.work.foldCutReader.pages[3-1]
+                    print(f'fold3: mediabox: {fold3.mediabox}, cropbox: {fold3.cropbox}, artbox: {fold3.artbox}')
+                    foldHeight = 8
+                    xLo = 0
+                    xHi = width*1/2
+                    yOffset = height*3/4+0
+                    foldBox = RectangleObject((xLo, yOffset-foldHeight/2, xHi, yOffset+foldHeight/2))
+                    fold3.mediabox = foldBox
+                    fold3.cropbox = foldBox
+                    outPdfPage.merge_page(fold3)
+
+                if numFolds >= 4:
+                    fold4 = ret.work.foldCutReader.pages[4-1]
+                    print(f'fold4: mediabox: {fold4.mediabox}, cropbox: {fold4.cropbox}, artbox: {fold4.artbox}')
+                    foldHeight = 8
+                    yLo = height*1/2
+                    yHi = height*3/4
+                    xOffset = width*3/4+0
+                    foldBox = RectangleObject((xOffset-foldHeight/2, yLo, xOffset+foldHeight/2, yHi))
+                    fold4.mediabox = foldBox
+                    fold4.cropbox = foldBox
+                    outPdfPage.merge_page(fold4)
+
+        if False:
+            outPdfPage.compress_content_streams()
 
 
 def pageCounts(ret):

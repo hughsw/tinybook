@@ -26,12 +26,14 @@ async def tinybook(
         configJson: str = Form(...),
         pdfFile: UploadFile = File(...),
 ):
+    print(f'/tinybook: pdfFile: {pdfFile}')
+    print(f'/tinybook: configJson: {configJson}')
+
     config = attrdict(loads(configJson))
     config.width = int(8.5 * 72)
     config.height = int(11 * 72)
 
-    #print(f'config: {config}')
-    #print(f'pdfFile: {pdfFile}')
+    print(f'/tinybook: config: {config}')
 
     fileBlob = await pdfFile.read()
     config.pdfFile = BytesIO(fileBlob)

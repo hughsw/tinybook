@@ -25,7 +25,7 @@ def horiz(zoo):
         mid = len(z) // 2
         zoo[x,y] = z[:mid], d
         x1 = s1 - x
-        zoo[x1,y] = z[:mid-1:-1], d if zoo.foldIndex % 2 else -d
+        zoo[x1,y] = z[:mid-1:-1], (d if zoo.foldIndex % 2 else -d)
     return validate(zoo)
 
 # undo a vertical fold (that is, vertical movement, horizontal crease...)
@@ -38,12 +38,12 @@ def vert(zoo):
         zoo[x,y] = z[:mid], d
         y1 = s1 - y
         # invert
-        zoo[x,y1] = z[:mid-1:-1], d if zoo.foldIndex % 2 else -d
+        zoo[x,y1] = z[:mid-1:-1], (d if zoo.foldIndex % 2 else -d)
     return validate(zoo)
 
 def undo(isOdd, pages):
     zoo = Zoo()
-    # cell on sheet, and pages behind the cell
+    # cell on sheet, and pages (folded) behind the cell, and orientation
     zoo[0,0] = pages, 1
     zoo.x = 1
     zoo.y = 1
@@ -112,10 +112,11 @@ def pageMap(ret):
 
     # each fold doubles, and there are two sides
     numPagesPerSheet = (1 << numFolds) * 2
+    numPagesPerSide = numPagesPerSheet // 2
 
     twoFaceTemplate = tuple(range(numPagesPerSheet))
 
-    print(f'pageMap: numFolds: {numFolds}, numPagesPerSheet: {numPagesPerSheet}')
+    print(f'pageMap: numFolds: {numFolds}, numPagesPerSheet: {numPagesPerSheet}, numPagesPerSide: {numPagesPerSide}')
 
     ret.work.pageMap = undo(isOdd, twoFaceTemplate)
     ret.work.outPages = sheetMap(ret)
