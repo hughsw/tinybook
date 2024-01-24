@@ -23,7 +23,7 @@ WORKDIR /app
 
 CMD ["uvicorn", "--host", "0.0.0.0", "main:app", "--reload"]
 
-COPY src/app/FoldAndCutMarks.pdf /app/
+COPY src/app/FoldAndCutMarks.pdf  /app/
 
-COPY src/app/*.py src/app/FoldAndCutMarks.pdf /app/
+COPY src/app/*.py  /app/
 RUN python -m py_compile /app/*.py
