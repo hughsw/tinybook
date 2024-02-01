@@ -12,16 +12,18 @@ name=tinybook2
 
 containerizer=${1:-docker}
 
+
+cd ${DIR}
+mkdir -p build-log
+
 set -x
-
 {
-    cd ${DIR}
-
     time $containerizer build -f ${name}.df -t docker.io/hughsw/${name} .
 } 2>&1 | tee build-log/build-${name}_${containerizer}_$(date '+%Y-%m-%d-%H%M-%S').log
-
 set +x
+
 exit
+
 
 docker buildx build --platform linux/amd64,linux/arm64 -f ${name}.df -t hughsw/${name} . 2>&1 | tee build.log
 echo | tee -a build.log
