@@ -5,6 +5,7 @@ from json import loads
 
 from fastapi import FastAPI, Path, Query, Form, File, UploadFile, Request
 from fastapi.responses import StreamingResponse
+import papersize
 
 from utils import attrdict
 from fold import fold, copy
@@ -21,6 +22,14 @@ async def read_item(item_id: int, q: Union[str, None] = None):
     #print(f'/items/: item_id: {item_id}')
     return {"item_id": item_id, "q": q}
 
+
+fold_marks_filename = '/app/FoldMarks.pdf'
+def get_fold_marks_blob():
+    with open(fold_marks_filename, 'rb') as foldAndCutMarksFile:
+        return foldAndCutMarksFile.read()
+
+foldMarksBlob = get_fold_marks_blob()
+
 @app.post("/tinybook")
 async def tinybook(
         configJson: str = Form(...),
@@ -30,19 +39,32 @@ async def tinybook(
     print(f'/tinybook: configJson: {repr(configJson)}')
 
     config = attrdict(loads(configJson))
-    config.width = int(8.5 * 72)
-    config.height = int(11 * 72)
+    config.size = papersize.SIZES.get(config.layout.lower())
+    if config.size is None:
+        config.size = '8.5in x 11in'
+    print(f'/tinybook: size: {config.size}')
+
+    if False:
+        x = papersize.parse_couple(config.size, unit='pt')
+        print(f'x: {x}')
+        config.width = int(8.5 * 72)
+        config.height = int(11 * 72)
+
+    config.width, config.height = map(int, papersize.parse_couple(config.size, unit='pt'))
 
     print(f'/tinybook: config: {config}')
 
     fileBlob = await pdfFile.read()
     config.pdfFile = BytesIO(fileBlob)
 
-    with open('/app/FoldMarks.pdf', 'rb') as foldAndCutMarksFile:
-    #with open('/app/FoldAndCutMarks.pdf', 'rb') as foldAndCutMarksFile:
-    #with open('/app/Fables.pdf', 'rb') as foldAndCutMarksFile:
-    #with open('/app/foo.pdf', 'rb') as foldAndCutMarksFile:
-        config.foldCutFile = BytesIO(foldAndCutMarksFile.read())
+    if False:
+        with open('/app/FoldMarks.pdf', 'rb') as foldAndCutMarksFile:
+        #with open('/app/FoldAndCutMarks.pdf', 'rb') as foldAndCutMarksFile:
+        #with open('/app/Fables.pdf', 'rb') as foldAndCutMarksFile:
+        #with open('/app/foo.pdf', 'rb') as foldAndCutMarksFile:
+            config.foldCutFile = BytesIO(foldAndCutMarksFile.read())
+
+    config.foldCutFile = BytesIO(foldMarksBlob)
 
     folds = fold(config)
     #folds = await fold(config)
