@@ -27,7 +27,7 @@ async def tinybook(
         pdfFile: UploadFile = File(...),
 ):
     print(f'/tinybook: pdfFile: {pdfFile}')
-    print(f'/tinybook: configJson: {configJson}')
+    print(f'/tinybook: configJson: {repr(configJson)}')
 
     config = attrdict(loads(configJson))
     config.width = int(8.5 * 72)
@@ -38,10 +38,14 @@ async def tinybook(
     fileBlob = await pdfFile.read()
     config.pdfFile = BytesIO(fileBlob)
 
-    with open('/app/FoldAndCutMarks.pdf', 'rb') as foldAndCutMarksFile:
+    with open('/app/FoldMarks.pdf', 'rb') as foldAndCutMarksFile:
+    #with open('/app/FoldAndCutMarks.pdf', 'rb') as foldAndCutMarksFile:
+    #with open('/app/Fables.pdf', 'rb') as foldAndCutMarksFile:
+    #with open('/app/foo.pdf', 'rb') as foldAndCutMarksFile:
         config.foldCutFile = BytesIO(foldAndCutMarksFile.read())
 
-    folds = await fold(config)
+    folds = fold(config)
+    #folds = await fold(config)
 
     outFile = folds.result.outer
     outFile.seek(0)

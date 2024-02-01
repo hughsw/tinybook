@@ -1,7 +1,15 @@
 
- curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Fables-preview.pdf" 'http://localhost:8000/tinybook' > fabdevpreview.pdf
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Annika-Airplanes_tinybook_qpdf.pdf" 'http://localhost:8000/tinybook' > AnnikaAirplanes.pdf && open AnnikaAirplanes.pdf
 
- curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book. - dev-preview.pdf" 'http://localhost:8000/tinybook' > tbdevpreview.pdf
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Annika-Airplanes_tinybook.pdf" 'http://localhost:8000/tinybook' > AnnikaAirplanes.pdf && open AnnikaAirplanes.pdf
+
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter","up":1}' --form pdfFile="@/Users/hugh/work/Emma/Annika-Airplanes_tinybook.pdf" 'http://localhost:8000/simple' > AnnikaAirplanes_simple.pdf && open AnnikaAirplanes_simple.pdf
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter","up":1}' --form pdfFile="@/Users/hugh/work/Emma/Annika-Airplanes_tinybook_preview.pdf" 'http://localhost:8000/simple' > AnnikaAirplanes_simple.pdf && open AnnikaAirplanes_simple.pdf
+
+
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Fables-preview.pdf" 'http://localhost:8000/tinybook' > fabdevpreview.pdf && open fabdevpreview.pdf
+
+ curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book. - dev-preview.pdf" 'http://localhost:8000/tinybook' > tbdevpreview.pdf && open tbdevpreview.pdf
 
  curl -sSL -X POST --form configJson='{"numFolds":2,"layout":"Letter","up":1}' --form pdfFile="@/Users/hugh/work/Emma/Fables-preview.pdf" 'http://localhost:8000/simple' > fabsimple.pdf
 
@@ -10,7 +18,7 @@
  curl -sSL -X POST --form paramsJson='{"numFolds":3,"layout":"A4"}' --form pdfFile="@Emma's Tiny Book.pdf" 'http://localhost:8000/tinybook' > foon10.pdf
 
 
- curl -sSL -X POST --form paramsJson='{"numFolds":3,"layout":"A4"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book.pdf" 'http://localhost:8000/tinybook' > foon.pdf
+ curl -sSL -X POST --form paramsJson='{"numFolds":3,"layout":"A4"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book.pdf" 'http://localhost:8000/tinybook' > foon.pdf && open foon.pdf
 
  curl -sSL -X POST --form configJson='{"numFolds":3,"layout":"Letter"}' --form pdfFile="@/Users/hugh/work/Emma/Emma's Tiny Book. - dev-preview.pdf" 'http://localhost:8000/tinybook' > tbdevpreview.pdf
 
