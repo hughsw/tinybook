@@ -3,23 +3,38 @@ FROM debian:12.4
 #FROM debian:11.5
 
 RUN  true \
+  && dpkg-reconfigure debconf --frontend=noninteractive \
   && apt-get update \
   && apt-get install -y \
       apt-utils \
   && apt-get install -y \
+      curl \
       emacs-nox \
-      python3-pip \
+      file \
+      findutils \
+      git \
+      jq \
+      lsof \
+      ncat \
+      procps \
       python3-fastapi \
       python3-jinja2 \
       python3-multipart \
+      python3-pypdf \
       python3-uvicorn \
       python3-venv \
+      rsync \
+      tmux \
+      unzip \
+      wget \
   && true
 
 
 RUN  true \
+  && curl -fsSL https://deb.nodesource.com/setup_21.x > /tmp/nodejs_setup \
+  && bash /tmp/nodejs_setup \
   && apt-get install -y \
-      python3-pypdf \
+      nodejs \
   && true
 
 WORKDIR /appvenv
@@ -31,11 +46,19 @@ RUN true \
        papersize \
   && true
 
-WORKDIR /app
+WORKDIR /app/client
+
+RUN  true \
+  && npm install vue \
+  && true
+
+WORKDIR /app/api
 
 CMD ["/app/cauvicorn", "--host", "0.0.0.0", "--port", "8000", "--reload", "main:app"]
 
-COPY src/app/cauvicorn src/app/FoldMarks.pdf  /app/
+COPY src/app/cauvicorn src/app/FoldAndCutMarks.pdf  /app/api/
 
-COPY src/app/*.py  /app/
-RUN python3 -m py_compile /app/*.py
+COPY src/app/*.py  /app/api/
+RUN python3 -m py_compile /app/api/*.py
+
+RUN ls -laR /app
