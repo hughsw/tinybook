@@ -1,6 +1,4 @@
-FROM debian:12.4
-#FROM python:3.11-rc-bullseye
-#FROM debian:11.5
+FROM debian:12.5
 
 RUN  true \
   && dpkg-reconfigure debconf --frontend=noninteractive \
@@ -8,9 +6,11 @@ RUN  true \
   && apt-get install -y \
       apt-utils \
   && apt-get install -y \
+      cmake \
       curl \
       emacs-nox \
       file \
+      dnsutils \
       findutils \
       git \
       jq \
@@ -29,12 +29,18 @@ RUN  true \
       wget \
   && true
 
-
 RUN  true \
   && curl -fsSL https://deb.nodesource.com/setup_21.x > /tmp/nodejs_setup \
   && bash /tmp/nodejs_setup \
+  && rm /tmp/nodejs_setup \
   && apt-get install -y \
       nodejs \
+  && npm update -g npm \
+  && true
+
+WORKDIR /app/client
+RUN  true \
+  && npm install vue \
   && true
 
 WORKDIR /appvenv
@@ -46,19 +52,10 @@ RUN true \
        papersize \
   && true
 
-WORKDIR /app/client
-
-RUN  true \
-  && npm install vue \
-  && true
-
 WORKDIR /app/api
 
 CMD ["/app/cauvicorn", "--host", "0.0.0.0", "--port", "8000", "--reload", "main:app"]
 
 COPY src/app/cauvicorn src/app/FoldAndCutMarks.pdf  /app/api/
-
 COPY src/app/*.py  /app/api/
 RUN python3 -m py_compile /app/api/*.py
-
-RUN ls -laR /app
